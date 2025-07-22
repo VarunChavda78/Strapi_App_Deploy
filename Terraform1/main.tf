@@ -51,7 +51,7 @@ resource "aws_instance" "strapi" {
       -v /srv/pgdata:/var/lib/postgresql/data \
       postgres:15
 
-    docker pull varunchavda78/strapi:${var.image_tag}
+    docker pull varunchavda78/strapi-app:${var.image_tag}
 
     docker run -d --name strapi --network strapi-net \
       -e DATABASE_CLIENT=postgres \
@@ -64,7 +64,7 @@ resource "aws_instance" "strapi" {
       -e API_TOKEN_SALT=OX3tBEnxGN9/uCw/1Jqz0Q== \
       -e ADMIN_JWT_SECRET=6uoLuxGM+1TXcQKjCG4Rrg== \
       -p 1337:1337 \
-      varunchavda78/strapi:${var.image_tag}
+      varunchavda78/strapi-app:${var.image_tag}
   EOF
 
   tags = {

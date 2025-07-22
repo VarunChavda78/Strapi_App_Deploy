@@ -48,4 +48,4 @@ jobs:
 
       - name: Terraform Apply
         working-directory: Terraform1/
-        run: terraform apply -auto-approve -var="image_tag=${{ steps.image_tag.outputs.tag }}"
+        run: terraform apply -auto-approve -var="image_tag=latest"
