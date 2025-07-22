@@ -14,12 +14,20 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Download Image Tag
+        uses: actions/download-artifact@v3
+        with:
+          name: image-tag
+
+      - name: Show Image Tag
+        run: cat image-tag.txt
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AKIAY27ONBCZTDFHWPC7 }}
-          aws-secret-access-key: ${{ secrets.ikY7huuNpRZFare5vy9ggnJs0NqrXTOKrMRObwWp }}
-          region: us-east-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
