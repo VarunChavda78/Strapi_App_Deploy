@@ -46,9 +46,10 @@ docker run -it -p 1337:1337 strapi-dockerized
 
 > The `-it` flag ensures interactive terminal access, and `-p` maps container port 1337 to local port 1337.
 
+
 ---
 
-# 🚀 Strapi Production Setup with PostgreSQL & Nginx (Dockerized)
+# 🚀 Task 3: Strapi Production Setup with PostgreSQL & Nginx (Dockerized)
 
 This repository contains a production-ready setup of a Strapi CMS backend using:
 
@@ -95,5 +96,109 @@ Once running, access:
 * (Internally: Strapi runs on port `1337` and is reverse proxied by Nginx)
 
 ---
-Task - 4
+
+
+Here is a `README.md` file for your **Terraform-based Strapi + PostgreSQL Deployment on AWS EC2 with Docker**:
+
+---
+
+# 🚀 Task 4: Terraform Deployment: Strapi + PostgreSQL on AWS EC2 with Docker
+
+This project automates the deployment of a Dockerized Strapi application and a PostgreSQL container on an Ubuntu-based AWS EC2 instance using Terraform.
+
+## 📦 What This Project Does
+
+- Provisions an Ubuntu EC2 instance in the `us-east-2` region.
+- Installs Docker and Docker Compose on the instance.
+- Runs a PostgreSQL container for the Strapi backend.
+- Pulls a prebuilt Strapi Docker image from Docker Hub.
+- Runs the Strapi container and connects it to the PostgreSQL container via a custom Docker network.
+- Uses a custom SSH key pair for secure access.
+
+---
+
+## 📁 Project Structure
+
+```
+
+terraform-strapi-deploy/
+│
+├── main.tf           # EC2 instance creation and Docker setup
+├── variable.tf       # Input variables
+├── outputs.tf         # Outputs like public IP
+├── terraform.tfvars  # store variables
+└── README.md         # Project overview and instructions
+
+````
+
+## 🔐 Security Group Rules
+
+- Port `22`: SSH access
+- Port `1337`: Strapi Admin Panel
+- Port `5432`: (Optional) PostgreSQL access (for debugging)
+
+---
+
+## 🔧 How It Works (User Data Boot Script)
+
+```bash
+#!/bin/bash
+apt update -y
+apt install -y docker.io
+systemctl start docker
+systemctl enable docker
+docker network create strapi-net
+
+# Run PostgreSQL container
+docker run -d --name postgres --network strapi-net \
+  -e POSTGRES_DB=strapi \
+  -e POSTGRES_USER=strapi \
+  -e POSTGRES_PASSWORD=strapi \
+  -v /srv/pgdata:/var/lib/postgresql/data \
+  postgres:15
+
+# Run Strapi container from Docker Hub image
+docker pull varunchavda78/strapi-app:latest
+docker run -d --name strapi --network strapi-net \
+  -e DATABASE_CLIENT=postgres \
+  -e DATABASE_HOST=postgres \
+  -e DATABASE_PORT=5432 \
+  -e DATABASE_NAME=strapi \
+  -e DATABASE_USERNAME=strapi \
+  -e DATABASE_PASSWORD=strapi \
+  -e APP_KEYS=... \
+  -e API_TOKEN_SALT=... \
+  -e ADMIN_JWT_SECRET=... \
+  -p 1337:1337 \
+  varunchavda78/strapi-app:latest
+````
+
+---
+
+## ⚙️ How to Deploy
+
+```bash
+terraform init
+terraform plan
+terraform apply
+```
+
+Once deployed, SSH into the instance using the `.pem` key:
+
+```bash
+ssh -i strapi-key.pem ubuntu@<public_ip>
+```
+
+Then access Strapi Admin Panel:
+
+```url
+http://<public_ip>:1337
+```
+
+---
+
+## 📤 Outputs
+
+* `public_ip`: The public IP address of the EC2 instance 
+
 ---
