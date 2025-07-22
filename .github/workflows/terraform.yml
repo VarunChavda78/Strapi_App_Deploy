@@ -23,9 +23,10 @@ jobs:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v3  # Use this instead of official for cross-workflow
         with:
-          workflow: CI
+          workflow: ci.yml
           name: image-tag
           path: .
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read image tag
         id: image_tag
