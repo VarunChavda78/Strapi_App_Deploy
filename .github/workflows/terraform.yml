@@ -51,5 +51,8 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var="image_tag=latest" \
-            -var="ami_id=ami-0d1b5a8c13042c939"
+            -var="ami_id=ami-0d1b5a8c13042c939" \
+            -var="key_name=strapii-key" \
+            -var="aws_region=us-east-2" \
+            -var="instance_type=t2.micro" \
 
