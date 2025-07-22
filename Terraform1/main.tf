@@ -2,13 +2,8 @@ provider "aws" {
   region = var.aws_region
 }
 
-data "aws_vpc" "default" {
-  default = true
-}
-
 resource "aws_security_group" "strapi_sg" {
-  name        = "strapi-app-seecg"
-  vpc_id = data.aws_vpc.default.id
+  name        = "strapi-appv-seecg"
   description = "Allow SSH and Strapi"
 
   ingress {
