@@ -26,7 +26,6 @@ jobs:
           workflow: CI
           name: image-tag
           path: .
-          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Read image tag
         id: image_tag
