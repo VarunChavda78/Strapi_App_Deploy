@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "strapi_sg" {
-  name        = "strapi-app-seeg"
+  name        = "strapi-app-seecg"
   description = "Allow SSH and Strapi"
 
   ingress {
