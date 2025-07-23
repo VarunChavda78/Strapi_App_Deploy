@@ -202,3 +202,120 @@ http://<public_ip>:1337
 * `public_ip`: The public IP address of the EC2 instance 
 
 ---
+
+# 🚀 Task 5 - Strapi Automated Deployment with GitHub Actions & Terraform
+
+This project automates the deployment of a Dockerized Strapi application to an AWS EC2 instance using **GitHub Actions** for CI/CD and **Terraform** for infrastructure provisioning.
+
+---
+
+## 📌 Objective
+
+* Automate Docker image build & push using GitHub Actions on every push to `main`.
+* Deploy the updated Docker image on an EC2 instance using Terraform.
+* Trigger the Terraform workflow manually.
+
+---
+
+## ✅ Task Breakdown
+
+### 1️⃣ Continuous Integration (CI) – Docker Build & Push
+
+**Workflow File:** `.github/workflows/ci.yml`
+
+#### Trigger:
+
+* Automatically runs on every push to the `main` branch.
+
+#### Actions Performed:
+
+* Checkout source code.
+* Log in to Docker Hub using GitHub Secrets.
+* Build Docker image for the Strapi app from `./Strapi-app`.
+* Push image to Docker Hub with the `latest` tag.
+* Save the image tag to an artifact named `image-tag`.
+
+#### Docker Image Tag Format:
+
+* `your-dockerhub-username/strapi-app:latest`
+
+---
+
+### 2️⃣ Continuous Deployment (CD) – Terraform-based Infrastructure
+
+**Workflow File:** `.github/workflows/terraform-deploy.yml`
+
+#### Trigger:
+
+* Automatically runs **after successful CI pipeline**.
+
+#### Actions Performed:
+
+* Download artifact (`image-tag`) from the CI workflow.
+* Configure AWS credentials using GitHub Secrets.
+* Run `terraform init` and `terraform apply` inside `Terraform1/` directory.
+* Variables passed to Terraform:
+
+  * `image_tag=latest`
+  * `ami_id=ami-0d1b5a8c13042c939`
+  * `key_name=strapii-key`
+  * `aws_region=us-east-2`
+  * `instance_type=t2.micro`
+
+---
+
+## 🔐 GitHub Secrets Used
+
+| Secret Name             | Purpose                              |
+| ----------------------- | ------------------------------------ |
+| `DOCKERHUB_USERNAME`    | Docker Hub username                  |
+| `DOCKERHUB_PASSWORD`    | Docker Hub password/token            |
+| `AWS_ACCESS_KEY_ID`     | AWS Access Key ID                    |
+| `AWS_SECRET_ACCESS_KEY` | AWS Secret Access Key                |
+| `GITHUB_TOKEN`          | Auto-injected GitHub token (default) |
+
+---
+
+## 🧪 Verification
+
+* After the workflow finishes, go to the EC2 instance.
+* Access the deployed Strapi application using **public IP**:
+
+  ```
+  http://<EC2_PUBLIC_IP>:1337
+  ```
+
+---
+
+## 📁 Project Structure
+
+```
+Strapi-Monitor-Hub/
+│
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       └── terraform-deploy.yml
+│
+├── Strapi-app/
+│   └── Dockerfile
+│
+├── Terraform2/
+│   ├── main.tf
+│   ├── variables.tf
+│   └── outputs.tf
+│
+└── README.md
+```
+
+---
+
+## 🛠 Technologies Used
+
+* **GitHub Actions**
+* **Terraform**
+* **Docker**
+* **AWS EC2**
+* **Strapi CMS**
+
+---
