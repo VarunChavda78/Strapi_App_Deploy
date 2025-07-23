@@ -2,7 +2,7 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Data block to fetch existing security group by name (if it exists)
+# Check for existing security group by name
 data "aws_security_group" "existing_sg" {
   filter {
     name   = "group-name"
@@ -10,11 +10,11 @@ data "aws_security_group" "existing_sg" {
   }
 }
 
-# Create security group only if it doesn't exist (optional workaround)
+# Only create if SG doesn't exist
 resource "aws_security_group" "strapi_sg" {
-  count       = length(data.aws_security_group.existing_sg.id) == 0 ? 1 : 0
+  count       = can(data.aws_security_group.existing_sg.id) ? 0 : 1
   name        = "strapi-appvcv-seecg"
-  description = "Allow SSH and Strapi ports"
+  description = "Allow SSH and Strapi"
 
   ingress {
     from_port   = 22
@@ -38,16 +38,16 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
-# Pick the security group: existing one or newly created one
+# Pick the correct SG ID
 locals {
-  strapi_sg_id = length(data.aws_security_group.existing_sg.id) > 0 ? data.aws_security_group.existing_sg.id : aws_security_group.strapi_sg[0].id
+  strapi_sg_id = can(data.aws_security_group.existing_sg.id) ? data.aws_security_group.existing_sg.id : aws_security_group.strapi_sg[0].id
 }
 
+# EC2 Instance
 resource "aws_instance" "strapi" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
-
   vpc_security_group_ids = [local.strapi_sg_id]
 
   user_data = <<-EOF
