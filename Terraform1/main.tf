@@ -12,7 +12,7 @@ data "aws_security_group" "existing_sg" {
 
 # Create security group only if it doesn't exist (optional workaround)
 resource "aws_security_group" "strapi_sg" {
-  count       = length(data.aws_security_group.existing_sg.ids) == 0 ? 1 : 0
+  count       = length(data.aws_security_group.existing_sg.id) == 0 ? 1 : 0
   name        = "strapi-appvcv-seecg"
   description = "Allow SSH and Strapi ports"
 
@@ -40,7 +40,7 @@ resource "aws_security_group" "strapi_sg" {
 
 # Pick the security group: existing one or newly created one
 locals {
-  strapi_sg_id = length(data.aws_security_group.existing_sg.ids) > 0 ? data.aws_security_group.existing_sg.id : aws_security_group.strapi_sg[0].id
+  strapi_sg_id = length(data.aws_security_group.existing_sg.id) > 0 ? data.aws_security_group.existing_sg.id : aws_security_group.strapi_sg[0].id
 }
 
 resource "aws_instance" "strapi" {
