@@ -2,17 +2,7 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Check for existing security group by name
-data "aws_security_group" "existing_sg" {
-  filter {
-    name   = "group-name"
-    values = ["strapi-appvcv-seecg"]
-  }
-}
-
-# Only create if SG doesn't exist
 resource "aws_security_group" "strapi_sg" {
-  count       = can(data.aws_security_group.existing_sg.id) ? 0 : 1
   name        = "strapi-appvcv-seecg"
   description = "Allow SSH and Strapi"
 
@@ -38,17 +28,12 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
-# Pick the correct SG ID
-locals {
-  strapi_sg_id = can(data.aws_security_group.existing_sg.id) ? data.aws_security_group.existing_sg.id : aws_security_group.strapi_sg[0].id
-}
-
-# EC2 Instance
 resource "aws_instance" "strapi" {
   ami           = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
-  vpc_security_group_ids = [local.strapi_sg_id]
+
+  vpc_security_group_ids = [aws_security_group.strapi_sg.id]
 
   user_data = <<-EOF
     #!/bin/bash
@@ -84,9 +69,5 @@ resource "aws_instance" "strapi" {
 
   tags = {
     Name = "strapi-varunn"
-  }
-
-  lifecycle {
-    prevent_destroy = true
   }
 }
